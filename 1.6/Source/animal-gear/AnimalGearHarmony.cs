@@ -148,6 +148,18 @@ namespace AnimalGear
             }
         }
 
+        [HarmonyPatch(typeof(ITab_Pawn_Gear), "get_CanControlColonist")]
+        public static class ITab_Pawn_Gear_CanControl_Patch
+        {
+            public static bool Prefix(ref bool __result, ITab_Pawn_Gear __instance)
+            {
+                var SelPawnForGearField = typeof(ITab_Pawn_Gear).GetMethod("get_CanControl", BindingFlags.Instance | BindingFlags.NonPublic);
+                __result = (bool)SelPawnForGearField.Invoke(__instance, new object[] { });
+                return false;
+            }
+        }
+
+
         [HarmonyPatch(typeof(ThingDef), nameof(ThingDef.SpecialDisplayStats))]
         public static class ThingDef_SpecialDisplayStatsPatch
         {
