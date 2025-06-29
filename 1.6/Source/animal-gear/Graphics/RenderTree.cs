@@ -2,10 +2,12 @@
 using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
 
 namespace AnimalGear.Graphics
@@ -28,7 +30,7 @@ namespace AnimalGear.Graphics
 
                 foreach (Apparel apparel in pawn.apparel.WornApparel)
                 {
-                    if (!apparel.def.IsWeapon) // TODO: Check if apparel is valid animal gear
+                    if (!apparel.def.IsWeapon)
                     {
                         DrawData drawData = apparel.def.apparel.drawData;
                         PawnRenderNodeProperties pawnRenderNodeProperties = new PawnRenderNodeProperties
@@ -44,6 +46,46 @@ namespace AnimalGear.Graphics
                 }
             }
         }
+        public static bool TryGetGraphicApparelForAnimal(Apparel apparel, Pawn pawn, bool forStatue, out ApparelGraphicRecord rec)
+        {
+            if (apparel.WornGraphicPath.NullOrEmpty())
+            {
+                rec = new ApparelGraphicRecord(null, null);
+                return false;
+            }
+
+            string path =  apparel.WornGraphicPath;
+            Shader shader = ShaderDatabase.Cutout;
+            if (!forStatue)
+            {
+                if (apparel.StyleDef?.graphicData.shaderType != null)
+                {
+                    shader = apparel.StyleDef.graphicData.shaderType.Shader;
+                }
+                else if ((apparel.StyleDef == null && apparel.def.apparel.useWornGraphicMask) || (apparel.StyleDef != null && apparel.StyleDef.UseWornGraphicMask))
+                {
+                    shader = ShaderDatabase.CutoutComplex;
+                }
+            }
+
+            Graphic graphic;
+            ApparelProperties appProp = apparel.def.apparel;
+            if (!appProp.tags.NullOrEmpty())
+            {
+                if (appProp.tags.Any(t => t.StartsWith("defName")))
+                {
+                    graphic = GraphicDatabase.Get<Graphic_Multi>($"{path}/{pawn.def.defName.CapitalizeFirst()}/{pawn.def.defName.CapitalizeFirst()}", shader, apparel.def.graphicData.drawSize, apparel.DrawColor);
+                    if (graphic != null)
+                    {
+                        rec = new ApparelGraphicRecord(graphic, apparel);
+                        return true;
+                    }
+                }
+            }
+            graphic = GraphicDatabase.Get<Graphic_Multi>(path, shader, apparel.def.graphicData.drawSize, apparel.DrawColor);
+            rec = new ApparelGraphicRecord(graphic, apparel);
+            return true;
+        }
 
         public class PawnRenderNode_Animal_Apparel : PawnRenderNode
         {
@@ -55,21 +97,13 @@ namespace AnimalGear.Graphics
 
             public override GraphicMeshSet MeshSetFor(Pawn pawn)
             {
-                if (this.apparel == null)
-                {
-                    return base.MeshSetFor(pawn);
-                }
-                if (base.Props.overrideMeshSize != null)
-                {
-                    return MeshPool.GetMeshSetForSize(base.Props.overrideMeshSize.Value.x, base.Props.overrideMeshSize.Value.y);
-                }
-
-                return HumanlikeMeshPoolUtility.GetHumanlikeBodySetForPawn(pawn, 1f, 1f);
+                float drawSize = pawn.ageTracker.CurKindLifeStage.bodyGraphicData?.drawSize.x ?? 1f;
+                return MeshPool.GetMeshSetForSize(drawSize, drawSize);
             }
             protected override IEnumerable<Graphic> GraphicsFor(Pawn pawn)
             {
                 ApparelGraphicRecord apparelGraphicRecord;
-                if (ApparelGraphicRecordGetter.TryGetGraphicApparel(this.apparel, BodyTypeDefOf.Male, false, out apparelGraphicRecord))
+                if (TryGetGraphicApparelForAnimal(this.apparel, pawn, false, out apparelGraphicRecord))
                 {
                     yield return apparelGraphicRecord.graphic;
                 }

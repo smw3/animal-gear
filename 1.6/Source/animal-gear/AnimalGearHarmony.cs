@@ -156,7 +156,15 @@ namespace AnimalGear
                 bool extraStatInserted = false;
                 foreach (StatDrawEntry entry in values)
                 {
-                    yield return entry;
+                    // The "covers" entry, eat it and do our own
+                    if (entry.DisplayPriorityWithinCategory == 2750)
+                    {
+                        ApparelProperties appProps = __instance.apparel;
+                        BodyDef showCoverageFor = __instance.GetModExtension<AnimalApparelDefExtension>()?.showCoverageForBodyType ?? BodyDefOf.Human;
+                        string coveredOuterPartsString = __instance.apparel.GetCoveredOuterPartsString(showCoverageFor);
+                        yield return new StatDrawEntry(StatCategoryDefOf.Apparel, "Covers".Translate(), coveredOuterPartsString, "Stat_Thing_Apparel_Covers_Desc".Translate(), 2750, null, null, false, false);
+                    }
+
                     if (entry.category == StatCategoryDefOf.Apparel && !extraStatInserted)
                     {
                         ApparelProperties appProps = __instance.apparel;
@@ -183,6 +191,7 @@ namespace AnimalGear
 
                         extraStatInserted = true;
                     }
+                    if (entry.DisplayPriorityWithinCategory != 2750) yield return entry;
                 }
             }
         }
