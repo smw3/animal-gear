@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/BodyDef//li[(def="Head" or (ancestor::li[def="Head"] and def))]/groups</xpath>
+		<success>Always</success>
+		<value>
+			<li>AnimalHead</li>
+		</value>
+		<order>Append</order>
+	</Operation>
+	
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/BodyDef//li[(def="Head" or (ancestor::li[def="Head"] and def)) and not(groups)]</xpath>
+		<success>Always</success>
+		<value>
+			<groups>
+				<li>AnimalHead</li>
+			</groups>
+		</value>
+		<order>Append</order>
+	</Operation>
+
+	
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/BodyDef/corePart/groups | /Defs/BodyDef/corePart//li[def and not(def="Head" or ancestor::li[def="Head"] or def="Leg" or ancestor::li[def="Leg"])]/groups</xpath>
+		<success>Always</success>
+		<value>
+			<li>AnimalBody</li>
+		</value>
+		<order>Append</order>
+	</Operation>
+	
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/BodyDef/corePart[not(groups)] | /Defs/BodyDef/corePart//li[def and not(def="Head" or ancestor::li[def="Head"] or def="Leg" or ancestor::li[def="Leg"]) and not(groups)]</xpath>
+		<success>Always</success>
+		<value>
+			<groups>
+				<li>AnimalBody</li>
+			</groups>
+		</value>
+		<order>Append</order>
+	</Operation>
+	
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/BodyDef/corePart//li[def and def="Leg" or ancestor::li[def="Leg"]]/groups</xpath>
+		<success>Always</success>
+		<value>
+			<li>AnimalLegs</li>
+		</value>
+		<order>Append</order>
+	</Operation>
+	
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/BodyDef/corePart//li[def and (def="Leg" or ancestor::li[def="Leg"]) and not(groups)]</xpath>
+		<success>Always</success>
+		<value>
+			<groups>
+				<li>AnimalLegs</li>
+			</groups>
+		</value>
+		<order>Append</order>
+	</Operation>
+</Patch>

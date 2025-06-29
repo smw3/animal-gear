@@ -1,0 +1,17 @@
+<Defs>
+  <BodyPartGroupDef>
+    <defName>AnimalBody</defName>
+    <label>body</label>
+    <listOrder>100</listOrder>
+  </BodyPartGroupDef>
+  <BodyPartGroupDef>
+    <defName>AnimalLegs</defName>
+    <label>legs</label>
+    <listOrder>101</listOrder>
+  </BodyPartGroupDef>
+    <BodyPartGroupDef>
+    <defName>AnimalHead</defName>
+    <label>head</label>
+    <listOrder>99</listOrder>
+  </BodyPartGroupDef>
+</Defs>

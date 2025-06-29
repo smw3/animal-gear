@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -102,6 +103,181 @@ namespace AnimalGear
                     return false;
                 }
                 return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(ThingDef), "get_DescriptionDetailed")]
+        public static class ThingDef_get_DescriptionDetailed_Patch
+        {
+            public static bool Prefix(ThingDef __instance, ref string __result)
+            {
+                if (!__instance.HasModExtension<AnimalApparelDefExtension>()) { return true; }
+                AnimalApparelDefExtension defExt = __instance.GetModExtension<AnimalApparelDefExtension>();
+
+                var cachedDescriptionField = typeof(ThingDef).GetField("descriptionDetailedCached", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (cachedDescriptionField.GetValue(__instance) == null)
+                {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.Append(__instance.description);
+                    if (__instance.IsApparel)
+                    {
+                        stringBuilder.AppendLine();
+                        stringBuilder.AppendLine();
+                        stringBuilder.AppendLine(string.Format("{0}: {1}", "Layer".Translate(), __instance.apparel.GetLayersString()));
+                        stringBuilder.AppendLine(string.Format("{0}", "ANG_RequireBodyType".Translate()));
+                        stringBuilder.Append(string.Format("{0}: {1}", "Covers".Translate(), __instance.apparel.GetCoveredOuterPartsString(defExt.showCoverageForBodyType)));
+                        if (__instance.equippedStatOffsets != null && __instance.equippedStatOffsets.Count > 0)
+                        {
+                            stringBuilder.AppendLine();
+                            stringBuilder.AppendLine();
+                            for (int i = 0; i < __instance.equippedStatOffsets.Count; i++)
+                            {
+                                if (i > 0)
+                                {
+                                    stringBuilder.AppendLine();
+                                }
+                                StatModifier statModifier = __instance.equippedStatOffsets[i];
+                                stringBuilder.Append(string.Format("{0}: {1}", statModifier.stat.LabelCap, statModifier.ValueToStringAsOffset));
+                            }
+                        }
+                    }
+                    cachedDescriptionField.SetValue(__instance, stringBuilder.ToString());
+                }
+                __result = (string)cachedDescriptionField.GetValue(__instance);
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(ThingDef), nameof(ThingDef.SpecialDisplayStats))]
+        public static class ThingDef_SpecialDisplayStatsPatch
+        {
+            public static IEnumerable<StatDrawEntry> Postfix(IEnumerable<StatDrawEntry> values, StatRequest req, ThingDef __instance)
+            {
+                bool extraStatInserted = false;
+                foreach (StatDrawEntry entry in values)
+                {
+                    yield return entry;
+                    if (entry.category == StatCategoryDefOf.Apparel && !extraStatInserted)
+                    {
+                        ApparelProperties appProps = __instance.apparel;
+                        if (!appProps.tags.NullOrEmpty() && appProps.tags.Any(x => x.StartsWith("bodyType")))
+                        {
+                            List<BodyDef> requiredBodyDefs = AnimalGearHelper.RequiredBodyDefFromTags(appProps);
+
+                            yield return new StatDrawEntry(StatCategoryDefOf.Apparel, "ANG_RequireBodyType".Translate(),
+                                    requiredBodyDefs.Select((BodyDef def) => def.defName)
+                                    .ToCommaList(false, false)
+                                    .CapitalizeFirst(),
+                                "ANG_RequiresBodyTypeDesc".Translate(), 2750, null, null, false, false);
+                        }
+                        if (!appProps.tags.NullOrEmpty() && appProps.tags.Any(x => x.StartsWith("defName")))
+                        {
+                            List<ThingDef> requiredDefs = AnimalGearHelper.RequiredThingDefFromTags(appProps);
+
+                            yield return new StatDrawEntry(StatCategoryDefOf.Apparel, "ANG_RequireDefName".Translate(),
+                                    requiredDefs.Select((ThingDef def) => def.label)
+                                    .ToCommaList(false, false)
+                                    .CapitalizeFirst(),
+                                "ANG_RequiresBodyTypeDesc".Translate(), 2750, null, null, false, false);
+                        }
+
+                        extraStatInserted = true;
+                    }
+                }
+            }
+        }
+
+        public static bool CanEquipThing(bool __result, ThingDef thing, Pawn pawn, ref string cantReason)
+        {
+            if (__result == false || thing == null || pawn == null)
+            {
+                return __result;
+            }
+
+            if (thing.IsApparel)
+            {
+                ApparelProperties appProps = thing.apparel;
+                if (appProps.tags.NullOrEmpty()) return __result;
+                if (appProps.tags.Any(x => x.StartsWith("bodyType")))
+                {
+                    if (!AnimalGearHelper.RequiredBodyDefFromTags(appProps).Contains(pawn.RaceProps.body))
+                    {
+                        cantReason = "ANG_WrongBodyType".Translate();
+                        return false;
+                    }
+                }
+                if (appProps.tags.Any(x => x.StartsWith("defName")))
+                {
+                    if (!AnimalGearHelper.RequiredThingDefFromTags(appProps).Contains(pawn.def))
+                    {
+                        cantReason = "ANG_WrongBodyType".Translate();
+                        return false;
+                    }
+                }
+            }
+
+            return __result;
+        }
+
+        // Gratefully borrowed from B&S Framework
+        [HarmonyPatch(typeof(EquipmentUtility), nameof(EquipmentUtility.CanEquip), new Type[]
+        {
+        typeof(Thing),
+        typeof(Pawn),
+        typeof(string),
+        typeof(bool)
+        }, new ArgumentType[]
+        {
+        ArgumentType.Normal,
+        ArgumentType.Normal,
+        ArgumentType.Out,
+        ArgumentType.Normal
+        })]
+        public static class EquipmentUtility_CanEquip_Patch
+        {
+            public static void Postfix(ref bool __result, Thing thing, Pawn pawn, ref string cantReason, bool checkBonded = true)
+            {
+                __result = CanEquipThing(__result, thing.def, pawn, ref cantReason);
+            }
+        }
+
+        [HarmonyPatch(typeof(ApparelRequirement), nameof(ApparelRequirement.AllowedForPawn))]
+        public static class ApparelRequirement_AllowedForPawn_Patch
+        {
+            public static void Postfix(ApparelRequirement __instance, ref bool __result, Pawn p, ThingDef apparel, bool ignoreGender)
+            {
+                if (__result == true)
+                {
+                    string discard = "";
+                    __result = CanEquipThing(__result, apparel, p, ref discard);
+                }
+
+            }
+        }
+
+        [HarmonyPatch(typeof(ApparelRequirement), nameof(ApparelRequirement.RequiredForPawn))]
+        public static class ApparelRequirement_RequiredForPawn_Patch
+        {
+            public static void Postfix(ApparelRequirement __instance, ref bool __result, Pawn p, ThingDef apparel, bool ignoreGender)
+            {
+                if (__result == true)
+                {
+                    string discard = "";
+                    __result = CanEquipThing(__result, apparel, p, ref discard);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Apparel), nameof(Apparel.PawnCanWear))]
+        public static class Apparel_PawnCanWear_Patch
+        {
+            public static void Postfix(Apparel __instance, ref bool __result, Pawn pawn, bool ignoreGender)
+            {
+                if (__result == true)
+                {
+                    string discard = "";
+                    __result = CanEquipThing(__result, __instance.def, pawn, ref discard);
+                }
             }
         }
     }

@@ -41,5 +41,19 @@ namespace AnimalGear
                 pawn.apparel = new Pawn_ApparelTracker(pawn);
             }
         }
+
+        public static List<BodyDef> RequiredBodyDefFromTags(ApparelProperties apparelProperties)
+        {
+            List<string> requiredBodyTypeDefName = [.. apparelProperties.tags.Where(x => x.StartsWith("bodyType")).Select(x => x.ReplaceFirst("bodyType", ""))];
+
+            return [.. requiredBodyTypeDefName.Select(defName => DefDatabase<BodyDef>.GetNamed(defName))];
+        }
+
+        public static List<ThingDef> RequiredThingDefFromTags(ApparelProperties apparelProperties)
+        {
+            List<string> requiredThingDef = [.. apparelProperties.tags.Where(x => x.StartsWith("defName")).Select(x => x.ReplaceFirst("defName", ""))];
+
+            return [.. requiredThingDef.Select(defName => DefDatabase<ThingDef>.GetNamed(defName))];
+        }
     }
 }

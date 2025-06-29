@@ -28,7 +28,7 @@ namespace AnimalGear.Graphics
 
                 foreach (Apparel apparel in pawn.apparel.WornApparel)
                 {
-                    if (!apparel.def.IsWeapon) // Check if apparel is animal gear
+                    if (!apparel.def.IsWeapon) // TODO: Check if apparel is valid animal gear
                     {
                         DrawData drawData = apparel.def.apparel.drawData;
                         PawnRenderNodeProperties pawnRenderNodeProperties = new PawnRenderNodeProperties
