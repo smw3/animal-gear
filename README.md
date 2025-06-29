@@ -1,9 +1,6 @@
 # animal-gear
-This is fork of Animal Gear, the original version found here: https://steamcommunity.com/sharedfiles/filedetails/?id=1541438907
+This is fork of Animal Gear, the original version found here: https://steamcommunity.com/sharedfiles/filedetails/?id=1541438907 and Owlchemist's fork which served as a starting point here: https://github.com/Owlchemist/animal-gear
 
-This version has 3 main differences:
-- Hugslib dependency has been stripped
-- The code has been peer reviewed for performance refinements (runs approx 2x faster)
-- Support has been switched over to Giddy-Up 2
+I have completely redone the rendering code to use modern Rimworld methods, trying to keep the difference between "Pawn Apparel" and "Animal Apparel" as minimal as possible.
 
-Disclaimers & Credit: Credit to the original author Dylan. This is a private fork made as a personal hobby, with no intentions to be published on the workshop. The original author is free to use this code as they see fit, whether that be wholesale or as a frame of reference.
+Disclaimers & Credit: Credit to the original author Dylan.
