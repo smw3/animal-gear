@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
 	<name>Animal Gear</name>
-	<author>Dylan, Owlchemist</author>
+	<author>Dylan, Owlchemist, Ingendum</author>
 	<supportedVersions>
-		<li>1.4</li>
+		<li>1.6</li>
 	</supportedVersions>
 	<packageId>Dylan.AnimalGear</packageId>
-	<description>Version 1.4.0.0
+	<description>Version 1.6.0.0
 		
 		Makes it possible for animals to have "gear" / clothes like normal colonists. 
 		What they should wear can be set through outfits in the animal tab (like normal colonists).
