@@ -74,7 +74,10 @@ namespace AnimalGear.Graphics
             {
                 if (appProp.tags.Any(t => t.StartsWith("defName")))
                 {
-                    graphic = GraphicDatabase.Get<Graphic_Multi>($"{path}/{pawn.def.defName.CapitalizeFirst()}/{pawn.def.defName.CapitalizeFirst()}", shader, apparel.def.graphicData.drawSize, apparel.DrawColor);
+                    string pawnDefToUse = pawn.def.defName;
+                    if (pawn.IsSapientAnimal()) pawnDefToUse = AnimalGearHelper.AnimalSourceFor(pawn).defName;
+
+                    graphic = GraphicDatabase.Get<Graphic_Multi>($"{path}/{pawnDefToUse.CapitalizeFirst()}/{pawnDefToUse.CapitalizeFirst()}", shader, apparel.def.graphicData.drawSize, apparel.DrawColor);
                     if (graphic != null)
                     {
                         rec = new ApparelGraphicRecord(graphic, apparel);
@@ -97,6 +100,12 @@ namespace AnimalGear.Graphics
 
             public override GraphicMeshSet MeshSetFor(Pawn pawn)
             {
+                tree.TryGetNodeByTag(PawnRenderNodeTagDefOf.Body, out PawnRenderNode bodyNode);
+                if (bodyNode != null)
+                {
+                    return bodyNode.MeshSetFor(pawn);
+                }
+
                 float drawSize = pawn.ageTracker.CurKindLifeStage.bodyGraphicData?.drawSize.x ?? 1f;
                 return MeshPool.GetMeshSetForSize(drawSize, drawSize);
             }

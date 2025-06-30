@@ -97,7 +97,7 @@ namespace AnimalGear
         {
             public static bool Prefix(Pawn_ApparelTracker __instance)
             {
-                if (__instance.pawn.IsAnimalOfAFaction())
+                if (__instance.pawn.IsAnimal())
                 {
                     __instance.pawn.Drawer.renderer.SetAllGraphicsDirty();
                     return false;
@@ -217,23 +217,9 @@ namespace AnimalGear
 
             if (thing.IsApparel)
             {
-                ApparelProperties appProps = thing.apparel;
-                if (appProps.tags.NullOrEmpty()) return __result;
-                if (appProps.tags.Any(x => x.StartsWith("bodyType")))
+                if (!AnimalGearHelper.CanEquipApparel(thing, pawn, ref cantReason))
                 {
-                    if (!AnimalGearHelper.RequiredBodyDefFromTags(appProps).Contains(pawn.RaceProps.body))
-                    {
-                        cantReason = "ANG_WrongBodyType".Translate();
-                        return false;
-                    }
-                }
-                if (appProps.tags.Any(x => x.StartsWith("defName")))
-                {
-                    if (!AnimalGearHelper.RequiredThingDefFromTags(appProps).Contains(pawn.def))
-                    {
-                        cantReason = "ANG_WrongBodyType".Translate();
-                        return false;
-                    }
+                    return false;
                 }
             }
 

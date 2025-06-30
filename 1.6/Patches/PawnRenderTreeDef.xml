@@ -12,4 +12,18 @@
 		</value>
 		<order>Append</order>
 	</Operation>
+	
+	<Operation Class="PatchOperationInsert">
+		<xpath>Defs/PawnRenderTreeDef[defName="BS_HumanlikeAnimal"]/root/children/li[tagDef="Body"]/children/li[debugLabel="Firefoam"]</xpath>
+		<success>Always</success>
+		<value>
+			<li>
+				<debugLabel>Animal apparel root</debugLabel>
+				<tagDef>AnimalApparel</tagDef>
+				<useGraphic>false</useGraphic>
+				<baseLayer>70</baseLayer>
+			</li>
+		</value>
+		<order>Append</order>
+	</Operation>
 </Patch>

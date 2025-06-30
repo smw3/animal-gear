@@ -22,6 +22,7 @@
 			</bodyPartGroups>
 			<wornGraphicPath>Things/Pawn/Animal/Apparel/Body/Power</wornGraphicPath>
 			<tags>
+				<li>AnimalApparel</li>
 				<li>defNameThrumbo</li>
 				<li>defNameAlpaca</li>
 				<li>defNameBoomalope</li>

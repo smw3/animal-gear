@@ -1,0 +1,33 @@
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Big and Small - Framework</li>
+		</mods>
+		<match Class="PatchOperationAdd">
+			<xpath>Defs//BigAndSmall.PawnExtensionDef[defName="BS_DefaultAnimal" or defName="BS_DefaultAnimal_NoHands" or defName="BS_DefaultAnimal_PoorHands"]/pawnExtension/apparelRestrictions</xpath>
+			<value>
+				<tags>
+					<allowlist>
+						<li>AnimalApparel</li>
+					</allowlist>
+				</tags>
+			</value>
+		</match>
+	</Operation>
+	
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Big and Small - Sapient Animals</li>
+		</mods>
+		<match Class="PatchOperationAdd">
+			<xpath>Defs/HediffDef[@ParentName="BS_DefaultRaceTracker"]/modExtensions/li[@Class="BigAndSmall.PawnExtension"]/apparelRestrictions</xpath>
+			<value>
+				<tags>
+					<allowlist>
+						<li>AnimalApparel</li>
+					</allowlist>
+				</tags>
+			</value>
+		</match>
+	</Operation>
+</Patch>
