@@ -122,13 +122,19 @@ namespace AnimalGear
             }
         }
 
+        // Redirect CanControlColonist to CanControl and a spawned check. Most of the checks done are super redundant anyways
+        // but the main purpose is to skip a test for humanlike
+        // This method is exclusively used to decide whether or not to draw the "drop apparel" inventory gizmo, so should have
+        // no side-effects
         [HarmonyPatch(typeof(ITab_Pawn_Gear), "get_CanControlColonist")]
         public static class ITab_Pawn_Gear_CanControl_Patch
         {
             public static bool Prefix(ref bool __result, ITab_Pawn_Gear __instance)
             {
                 var SelPawnForGearField = typeof(ITab_Pawn_Gear).GetMethod("get_CanControl", BindingFlags.Instance | BindingFlags.NonPublic);
+                Pawn selPawn = (Pawn)typeof(ITab_Pawn_Gear).GetMethod("get_SelPawnForGear", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(__instance, new object[] { });
                 __result = (bool)SelPawnForGearField.Invoke(__instance, new object[] { });
+                __result = __result && selPawn.Spawned;
                 return false;
             }
         }
@@ -154,24 +160,13 @@ namespace AnimalGear
                     if (entry.category == StatCategoryDefOf.Apparel && !extraStatInserted)
                     {
                         ApparelProperties appProps = __instance.apparel;
-                        if (!appProps.tags.NullOrEmpty() && appProps.tags.Any(x => x.StartsWith("bodyType")))
-                        {
-                            List<BodyDef> requiredBodyDefs = AnimalGearHelper.RequiredBodyDefFromTags(appProps);
-
-                            yield return new StatDrawEntry(StatCategoryDefOf.Apparel, "ANG_RequireBodyType".Translate(),
-                                    requiredBodyDefs.Select((BodyDef def) => def.defName)
-                                    .ToCommaList(false, false)
-                                    .CapitalizeFirst(),
-                                "ANG_RequiresBodyTypeDesc".Translate(), 2750, null, null, false, false);
-                        }
                         if (!appProps.tags.NullOrEmpty() && appProps.tags.Any(x => x.StartsWith("defName")))
                         {
                             List<ThingDef> requiredDefs = AnimalGearHelper.RequiredThingDefFromTags(appProps);
 
                             yield return new StatDrawEntry(StatCategoryDefOf.Apparel, "ANG_RequireDefName".Translate(),
-                                    requiredDefs.Select((ThingDef def) => def.label)
-                                    .ToCommaList(false, false)
-                                    .CapitalizeFirst(),
+                                    requiredDefs.Select((ThingDef def) => def.label.CapitalizeFirst())
+                                    .ToCommaList(false, false),
                                 "ANG_RequiresBodyTypeDesc".Translate(), 2750, null, null, false, false);
                         }
 
@@ -191,10 +186,7 @@ namespace AnimalGear
 
             if (thing.IsApparel)
             {
-                if (!AnimalGearHelper.CanEquipApparel(thing, pawn, ref cantReason))
-                {
-                    return false;
-                }
+                __result = __result && AnimalGearHelper.CanEquipApparel(thing, pawn, ref cantReason);
             }
 
             return __result;

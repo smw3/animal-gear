@@ -30,4 +30,22 @@
 			</value>
 		</match>
 	</Operation>
+	
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Big and Small - Framework</li>
+		</mods>
+		<match Class="PatchOperationInsert">
+			<xpath>Defs/PawnRenderTreeDef[defName="BS_HumanlikeAnimal"]/root/children/li[tagDef="Body"]/children/li[debugLabel="Firefoam"]</xpath>
+			<value>
+				<li>
+					<debugLabel>Animal apparel root</debugLabel>
+					<tagDef>AnimalApparel</tagDef>
+					<useGraphic>false</useGraphic>
+					<baseLayer>70</baseLayer>
+				</li>
+			</value>
+			<order>Append</order>
+		</match>
+	</Operation>
 </Patch>

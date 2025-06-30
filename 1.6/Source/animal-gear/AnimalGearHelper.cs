@@ -44,13 +44,6 @@ namespace AnimalGear
             }
         }
 
-        public static List<BodyDef> RequiredBodyDefFromTags(ApparelProperties apparelProperties)
-        {
-            List<string> requiredBodyTypeDefName = [.. apparelProperties.tags.Where(x => x.StartsWith("bodyType")).Select(x => x.ReplaceFirst("bodyType", ""))];
-
-            return [.. requiredBodyTypeDefName.Select(defName => DefDatabase<BodyDef>.GetNamed(defName))];
-        }
-
         public static List<ThingDef> RequiredThingDefFromTags(ApparelProperties apparelProperties)
         {
             List<string> requiredThingDef = [.. apparelProperties.tags.Where(x => x.StartsWith("defName")).Select(x => x.ReplaceFirst("defName", ""))];
@@ -91,25 +84,14 @@ namespace AnimalGear
         public static bool CanEquipApparel(ThingDef thing, Pawn pawn, ref string cantReason)
         {
             ApparelProperties appProps = thing.apparel;
-            if (appProps.tags.NullOrEmpty()) return true;
-
-            if (appProps.tags.Any(x => x.StartsWith("bodyType")))
-            {
-                if (!RequiredBodyDefFromTags(appProps).Contains(pawn.RaceProps.body))
-                {
-                    cantReason = "ANG_WrongBodyType".Translate();
-                    return false;
-                }
-            }
+            if (!pawn.IsAnimal() && !pawn.IsSapientAnimal()) return true;
             if (appProps.tags.Any(x => x.StartsWith("defName")))
             {
                 bool defAllowed = false;
                 if (RequiredThingDefFromTags(appProps).Contains(pawn.def))
                 {
                     defAllowed = true;
-                }
-                else
-                {
+                } else {
                     if (ModsConfig.IsActive("RedMattis.BetterPrerequisites"))
                     {
                         if (pawn.IsSapientAnimal() && RequiredThingDefFromTags(appProps).Contains(AnimalSourceFor(pawn)))
@@ -123,10 +105,14 @@ namespace AnimalGear
                 {
                     cantReason = "ANG_WrongBodyType".Translate();
                     return false;
+                } else
+                {
+                    return true;
                 }
             }
 
-            return true;
+            cantReason = "ANG_WrongBodyType".Translate();
+            return false;
         }
     }
 }

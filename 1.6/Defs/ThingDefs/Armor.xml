@@ -1,8 +1,8 @@
 <Defs>
 	<ThingDef ParentName="ApparelArmorCataphractBase">
 		<defName>Apparel_ArmorCataphract_Animal</defName>
-		<label>cataphract armor</label>
-		<description>A suit of heavy powered armor for a variety of animals, built for maximum protection at the cost of mobility. Heavy layered plasteel-weave plates with solid ablative coatings stop all but the most well-aimed or powerful attacks. Neuro-memetic assistors prevent the suit's massive weight from immobilizing the wearer entirely, but the suit is still quite cumbersome.\n\nArmor like this is used by imperial cataphracts to break heavily fortified positions in frontal assaults when no other option is available.</description>
+		<label>animal cataphract armor</label>
+		<description>A suit of heavy powered armor for a variety of animals, built for maximum protection at the cost of mobility. Heavy layered plasteel-weave plates with solid ablative coatings stop all but the most well-aimed or powerful attacks. Neuro-memetic assistors prevent the suit's massive weight from immobilizing the wearer entirely, but the suit is still quite cumbersome.\n\nArmor like this is used by imperial mounts to break heavily fortified positions in frontal assaults when no other option is available.</description>
 		<tradeTags>
 			<li>Armor</li>
 		</tradeTags>
@@ -20,13 +20,33 @@
 				<li>AnimalLegs</li>
 				<li>AnimalHead</li>
 			</bodyPartGroups>
+			<!-- This will in fact FIRST look for sprites based on the defName -->
+			<!-- For example for a Thrumbo: -->
+			<!-- Things/Pawn/Animal/Apparel/Body/Power/Thrumbo/Thrumbo_[north/east/south].png -->
+			<!-- if no sprite found on that path, it uses the path as usual -->
 			<wornGraphicPath>Things/Pawn/Animal/Apparel/Body/Power</wornGraphicPath>
 			<tags>
 				<li>AnimalApparel</li>
-				<li>defNameThrumbo</li>
 				<li>defNameAlpaca</li>
+				<li>defNameBear_Grizzly</li>
+				<li>defNameBear_Polar</li>
 				<li>defNameBoomalope</li>
+				<li>defNameBoomrat</li>
+				<li>defNameCapybara</li>
+				<li>defNameChinchilla</li>
+				<li>defNameCobra</li>
 				<li>defNameCow</li>
+				<li>defNameDromedary</li>
+				<li>defNameElephant</li>
+				<li>defNameFox_Arctic</li>
+				<li>defNameFox_Fennec</li>
+				<li>defNameFox_Red</li>
+				<li>defNameHusky</li>
+				<li>defNameMegasloth</li>
+				<li>defNameRhinoceros</li>
+				<li>defNameSquirrel</li>
+				<li>defNameThrumbo</li>
+				<li>defNameWarg</li>
 			</tags>
 		</apparel>
 		<modExtensions>
