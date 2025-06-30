@@ -1,24 +1,18 @@
 <Defs>
-	<ThingDef ParentName="ApparelArmorCataphractBase">
+	<!-- Note that the parents are only available due to a patch, see patches/InheritableArmor -->
+	<ThingDef ParentName="Apparel_ArmorCataphract_Base">
 		<defName>Apparel_ArmorCataphract_Animal</defName>
 		<label>animal cataphract armor</label>
 		<description>A suit of heavy powered armor for a variety of animals, built for maximum protection at the cost of mobility. Heavy layered plasteel-weave plates with solid ablative coatings stop all but the most well-aimed or powerful attacks. Neuro-memetic assistors prevent the suit's massive weight from immobilizing the wearer entirely, but the suit is still quite cumbersome.\n\nArmor like this is used by imperial mounts to break heavily fortified positions in frontal assaults when no other option is available.</description>
-		<tradeTags>
-			<li>Armor</li>
-		</tradeTags>
-		<recipeMaker>
-			<displayPriority>125</displayPriority>
-		</recipeMaker>
 		<graphicData>
-			<texPath>Things/Pawn/Animal/Apparel/Body/Power/Cow/Cow_east</texPath>
+			<texPath>Things/Pawn/Animal/Apparel/Body/Power/power</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
-			<drawSize>2.0</drawSize>
+			<drawSize>1.5</drawSize>
 		</graphicData>
 		<apparel>
 			<bodyPartGroups>
 				<li>AnimalBody</li>
 				<li>AnimalLegs</li>
-				<li>AnimalHead</li>
 			</bodyPartGroups>
 			<!-- This will in fact FIRST look for sprites based on the defName -->
 			<!-- For example for a Thrumbo: -->
@@ -48,6 +42,104 @@
 				<li>defNameThrumbo</li>
 				<li>defNameWarg</li>
 			</tags>
+			<defaultOutfitTags/>
+		</apparel>
+		<modExtensions>
+			<li Class="AnimalGear.AnimalApparelDefExtension">
+				<showCoverageForBodyType>QuadrupedAnimalWithPaws</showCoverageForBodyType>
+			</li>
+		</modExtensions>
+	</ThingDef>
+	<ThingDef ParentName="Apparel_FlakJacket_Base">
+		<defName>Apparel_FlakJacket_Animal</defName>
+		<label>animal flak jacket</label>
+		<graphicData>
+			<texPath>Things/Pawn/Animal/Apparel/Body/Flak/flak</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>1.5</drawSize>
+		</graphicData>
+		<apparel>
+			<bodyPartGroups>
+				<li>AnimalBody</li>
+				<li>AnimalLegs</li>
+			</bodyPartGroups>
+			<!-- This will in fact FIRST look for sprites based on the defName -->
+			<!-- For example for a Thrumbo: -->
+			<!-- Things/Pawn/Animal/Apparel/Body/Flak/Thrumbo/Thrumbo_[north/east/south].png -->
+			<!-- if no sprite found on that path, it uses the path as usual -->
+			<wornGraphicPath>Things/Pawn/Animal/Apparel/Body/Flak</wornGraphicPath>
+			<tags>
+				<li>AnimalApparel</li>
+				<li>defNameAlpaca</li>
+				<li>defNameCobra</li>
+				<li>defNameCougar</li>
+				<li>defNameFox_Arctic</li>
+				<li>defNameFox_Fennec</li>
+				<li>defNameFox_Red</li>
+				<li>defNameHusky</li>
+				<li>defNameLabradorRetriever</li>
+				<li>defNameLynx</li>
+				<li>defNameMegascarab</li>
+				<li>defNamePanther</li>
+				<li>defNameSpelopede</li>
+				<li>defNameSquirrel</li>
+			</tags>
+			<defaultOutfitTags/>
+		</apparel>
+		<modExtensions>
+			<li Class="AnimalGear.AnimalApparelDefExtension">
+				<showCoverageForBodyType>QuadrupedAnimalWithPaws</showCoverageForBodyType>
+			</li>
+		</modExtensions>
+	</ThingDef>
+	<ThingDef ParentName="Apparel_PlateArmor_Base">
+		<defName>Apparel_PlateArmor_Animal</defName>
+		<label>animal plate armor</label>
+		<graphicData>
+			<texPath>Things/Pawn/Animal/Apparel/Body/Plate/plate</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>1.5</drawSize>
+		</graphicData>
+		<apparel>
+			<bodyPartGroups>
+				<li>AnimalBody</li>
+				<li>AnimalLegs</li>
+			</bodyPartGroups>
+			<!-- This will in fact FIRST look for sprites based on the defName -->
+			<!-- For example for a Thrumbo: -->
+			<!-- Things/Pawn/Animal/Apparel/Body/Plate/Thrumbo/Thrumbo_[north/east/south].png -->
+			<!-- if no sprite found on that path, it uses the path as usual -->
+			<wornGraphicPath>Things/Pawn/Animal/Apparel/Body/Plate</wornGraphicPath>
+			<tags>
+				<li>AnimalApparel</li>
+				<li>defNameAlpaca</li>
+				<li>defNameBear_Grizzly</li>
+				<li>defNameBear_Polar</li>
+				<li>defNameCat</li>
+				<li>defNameCobra</li>
+				<li>defNameCougar</li>
+				<li>defNameElephant</li>
+				<li>defNameFox_Arctic</li>
+				<li>defNameFox_Fennec</li>
+				<li>defNameFox_Red</li>
+				<li>defNameHorse</li>
+				<li>defNameHusky</li>
+				<li>defNameLabradorRetriever</li>
+				<li>defNameLynx</li>
+				<li>defNameMegascarab</li>
+				<li>defNameMegasloth</li>
+				<li>defNameOstrich</li>
+				<li>defNamePanther</li>
+				<li>defNameRhinoceros</li>
+				<li>defNameSpelopede</li>
+				<li>defNameSquirrel</li>
+				<li>defNameThrumbo</li>
+				<li>defNameWarg</li>
+				<li>defNameWildBoar</li>
+				<li>defNameWolf_Arctic</li>
+				<li>defNameWolf_Timber</li>
+			</tags>
+			<defaultOutfitTags/>
 		</apparel>
 		<modExtensions>
 			<li Class="AnimalGear.AnimalApparelDefExtension">
