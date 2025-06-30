@@ -139,6 +139,20 @@ namespace AnimalGear
             }
         }
 
+        // Stop the normal render node setup from setting up apparel nodes for animals, sapient and otherwise
+        [HarmonyPatch(typeof(DynamicPawnRenderNodeSetup_Apparel), "GetDynamicNodes")]
+        public static class DynamicPawnRenderNodeSetup_Apparel_GetDynamicNodes_Patch
+        {
+            public static bool Prefix(ref IEnumerable<ValueTuple<PawnRenderNode, PawnRenderNode>> __result, DynamicPawnRenderNodeSetup_Apparel __instance, Pawn pawn, PawnRenderTree tree)
+            {
+                if (pawn.IsAnimal() || pawn.IsSapientAnimal())
+                {
+                    __result = Enumerable.Empty<ValueTuple<PawnRenderNode, PawnRenderNode>>();
+                    return false;
+                }
+                return true;
+            }
+        }
 
         [HarmonyPatch(typeof(ThingDef), nameof(ThingDef.SpecialDisplayStats))]
         public static class ThingDef_SpecialDisplayStatsPatch
