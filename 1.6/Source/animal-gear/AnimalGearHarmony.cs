@@ -53,20 +53,7 @@ namespace AnimalGear
         {
             public static void Postfix(Pawn pawn)
             {
-                try
-                {
-                    if (pawn.IsAnimalOfAFaction())
-                    {
-                        pawn.EnsureInitApparelTrackers();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (Prefs.DevMode)
-                    {
-                        Log.Error("PawnComponentsUtility_CreateInitialComponents_Patch: error: " + ex.Message);
-                    }
-                }
+                if (pawn.IsAnimalOfAFaction()) pawn.EnsureInitApparelTrackers();
             }
         }
 
@@ -75,20 +62,7 @@ namespace AnimalGear
         {
             public static void Postfix(Pawn pawn, bool actAsIfSpawned)
             {
-                try
-                {
-                    if (pawn.IsAnimalOfAFaction())
-                    {
-                        pawn.EnsureInitApparelTrackers();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (Prefs.DevMode)
-                    {
-                        Log.Error("PawnComponentsUtility_AddAndRemoveDynamicComponents_Patch: error: " + ex.Message);
-                    }
-                }
+                if (pawn.IsAnimalOfAFaction()) pawn.EnsureInitApparelTrackers();
             }
         }
 
