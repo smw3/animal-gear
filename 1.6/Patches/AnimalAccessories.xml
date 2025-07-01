@@ -1,0 +1,10 @@
+<Patch>
+	<!-- Smokepop and firefoam sort of make sense, but look real weird -->
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/ThingDef[defName="Apparel_ShieldBelt"]/apparel/tags</xpath>
+		<value>
+			<li>AnimalApparel</li>
+		</value>
+		<order>Append</order>
+	</Operation>
+</Patch>

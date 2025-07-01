@@ -110,8 +110,8 @@ namespace AnimalGear
                     return true;
                 }
             } else {
-                // Animals can't wear human gear
-                if (pawn.IsAnimal() || pawn.IsSapientAnimal())
+                // Animals can't wear human gear unless it's marked as such
+                if ((pawn.IsAnimal() || pawn.IsSapientAnimal()) && !appProps.tags.Any(x => x.Equals("AnimalApparel")))
                 {
                     cantReason = "ANG_WrongBodyType".Translate();
                     return false;
