@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>Animal Gear</name>
+	<name>Animal Apparel: Framework</name>
 	<author>Ingendum</author>
 	<supportedVersions>
 		<li>1.6</li>
 	</supportedVersions>
-	<packageId>Ingendum.AnimalGear</packageId>
-	<description>This mod allows animals to wear armor and other specialized apparel. It can also serve as a base for other mods to add more.
-	Special thanks to Owlchemist for permitting me to reuse the sprites from the deprecated "Animal Equipment" mod.
+	<packageId>Ingendum.AnimalApparelFramework</packageId>
+	<description>This mod enables other mods to create armor and apparel that can be worn by animals.
 	</description>
 	<modDependencies>
 		<li>
