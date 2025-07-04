@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/BodyDef//li[(def="Head" or (ancestor::li[def="Head"] and def))]/groups</xpath>
+		<xpath>/Defs/BodyDef//li[(contains(def, 'Head') or (ancestor::li[contains(def, 'Head')] and def))]/groups</xpath>
 		<success>Always</success>
 		<value>
 			<li>AnimalHead</li>
@@ -10,7 +10,7 @@
 	</Operation>
 	
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/BodyDef//li[(def="Head" or (ancestor::li[def="Head"] and def)) and not(groups)]</xpath>
+		<xpath>/Defs/BodyDef//li[(contains(def, 'Head') or (ancestor::li[contains(def, 'Head')] and def)) and not(groups)]</xpath>
 		<success>Always</success>
 		<value>
 			<groups>
@@ -22,7 +22,7 @@
 
 	
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/BodyDef/corePart/groups | /Defs/BodyDef/corePart//li[def and not(def="Head" or ancestor::li[def="Head"] or def="Leg" or ancestor::li[def="Leg"])]/groups</xpath>
+		<xpath>/Defs/BodyDef/corePart/groups | /Defs/BodyDef/corePart//li[def and not(contains(def, 'Head') or ancestor::li[contains(def, 'Head')] or contains(def, 'Leg') or ancestor::li[contains(def, 'Leg')])]/groups</xpath>
 		<success>Always</success>
 		<value>
 			<li>AnimalBody</li>
@@ -31,7 +31,7 @@
 	</Operation>
 	
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/BodyDef/corePart[not(groups)] | /Defs/BodyDef/corePart//li[def and not(def="Head" or ancestor::li[def="Head"] or def="Leg" or ancestor::li[def="Leg"]) and not(groups)]</xpath>
+		<xpath>/Defs/BodyDef/corePart[not(groups)] | /Defs/BodyDef/corePart//li[def and not(contains(def, 'Head') or ancestor::li[contains(def, 'Head')] or contains(def, 'Leg') or ancestor::li[contains(def, 'Leg')]) and not(groups)]</xpath>
 		<success>Always</success>
 		<value>
 			<groups>
@@ -42,7 +42,7 @@
 	</Operation>
 	
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/BodyDef/corePart//li[def and def="Leg" or ancestor::li[def="Leg"]]/groups</xpath>
+		<xpath>/Defs/BodyDef/corePart//li[def and contains(def, 'Leg') or ancestor::li[contains(def, 'Leg')]]/groups</xpath>
 		<success>Always</success>
 		<value>
 			<li>AnimalLegs</li>
@@ -51,7 +51,7 @@
 	</Operation>
 	
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/BodyDef/corePart//li[def and (def="Leg" or ancestor::li[def="Leg"]) and not(groups)]</xpath>
+		<xpath>/Defs/BodyDef/corePart//li[def and (contains(def, 'Leg') or ancestor::li[contains(def, 'Leg')]) and not(groups)]</xpath>
 		<success>Always</success>
 		<value>
 			<groups>
