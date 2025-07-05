@@ -92,12 +92,9 @@ namespace AnimalGear
                 {
                     defAllowed = true;
                 } else {
-                    if (ModsConfig.IsActive("RedMattis.BetterPrerequisites"))
+                    if (pawn.IsSapientAnimal() && RequiredThingDefFromTags(appProps).Contains(AnimalSourceFor(pawn)))
                     {
-                        if (pawn.IsSapientAnimal() && RequiredThingDefFromTags(appProps).Contains(AnimalSourceFor(pawn)))
-                        {
-                            defAllowed = true;
-                        }
+                        defAllowed = true;
                     }
                 }
 
