@@ -1,6 +1,7 @@
 <loadFolders>
-  <v1.6>
-    <li>/</li>
-    <li>1.6/</li>
-  </v1.6>
+	<v1.6>
+		<li>/</li>
+		<li>1.6/</li>
+		<li IfModActive="sarg.alphaanimals">Mods/sarg.alphaanimals/1.6/</li>
+	</v1.6>
 </loadFolders>

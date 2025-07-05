@@ -21,7 +21,6 @@ namespace AnimalGear.Graphics
                 rec = new ApparelGraphicRecord(null, null);
                 return false;
             }
-
             string path =  apparel.WornGraphicPath;
             Shader shader = ShaderDatabase.Cutout;
             if (apparel.StyleDef?.graphicData.shaderType != null)
@@ -41,7 +40,10 @@ namespace AnimalGear.Graphics
                     string pawnDefToUse = pawn.def.defName;
                     if (pawn.IsSapientAnimal()) pawnDefToUse = AnimalGearHelper.AnimalSourceFor(pawn).defName;
 
-                    graphic = GraphicDatabase.Get<Graphic_Multi>($"{path}/{pawnDefToUse.CapitalizeFirst()}/{pawnDefToUse.CapitalizeFirst()}", shader, apparel.def.graphicData.drawSize, apparel.DrawColor);
+                    string fullPath = $"{path}/{ pawnDefToUse.CapitalizeFirst()}/{ pawnDefToUse.CapitalizeFirst()}";
+                    if (ContentFinder<Texture2D>.Get(fullPath + "_eastm", false) != null) shader = ShaderDatabase.CutoutComplex;
+
+                    graphic = GraphicDatabase.Get<Graphic_Multi>(fullPath, shader, apparel.def.graphicData.drawSize, apparel.DrawColor);
                     if (graphic != null)
                     {
                         rec = new ApparelGraphicRecord(graphic, apparel);
