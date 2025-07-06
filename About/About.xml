@@ -15,4 +15,7 @@
 			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
 		</li>
 	</modDependencies>
+	<incompatibleWith>
+		<li>Dylan.AnimalGear</li>
+	</incompatibleWith>
 </ModMetaData>

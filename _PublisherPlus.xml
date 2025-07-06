@@ -2,6 +2,8 @@
 <Configuration>
   <Excluded>
     <exclude>.git</exclude>
+    <exclude>1.6\Assemblies\AnimalGear.pdb</exclude>
     <exclude>1.6\Source</exclude>
+    <exclude>About\Preview.psd</exclude>
   </Excluded>
 </Configuration>
