@@ -55,9 +55,9 @@ namespace AnimalGear
         public static bool IsSapientAnimal(this Pawn pawn)
         {
             if (!ModsConfig.IsActive("RedMattis.BetterPrerequisites")) return false;
-            IsSapientAnimalMethod ??= AccessTools.Method(AccessTools.TypeByName("AnimalGenes.Helpers.ExtensionMethods"), "IsSapientAnimal");
-
-            return (bool)IsSapientAnimalMethod.Invoke(null, new object[] { pawn });
+            IsSapientAnimalMethod ??= AccessTools.Method(AccessTools.TypeByName("BigAndSmall.HumanlikeAnimals"), "IsHumanlikeAnimal");
+            
+            return (bool)IsSapientAnimalMethod.Invoke(null, new object[] { pawn.def });
         }
 
         private static MethodInfo AnimalSourceForMethod = null;
