@@ -2,7 +2,16 @@
 <LanguageData>
 	
 	<ANG_WrongBodyType>Wrong bodytype</ANG_WrongBodyType>
+	
 	<ANG_RequireBodyType>Requires bodytype</ANG_RequireBodyType>
 	<ANG_RequiresBodyTypeDesc>Requires a specific bodytype.</ANG_RequiresBodyTypeDesc>
+	
+	<ANG_SuitableFor>Suitable for</ANG_SuitableFor>
+	<ANG_SuitableAnimal>Animals only</ANG_SuitableAnimal>
+	<ANG_SuitableHuman>Humans</ANG_SuitableHuman>
+	<ANG_SuitableAnimalHuman>Human and animal</ANG_SuitableAnimalHuman>
+	<ANG_SuitableSpecific>Specific creatures</ANG_SuitableSpecific>
+	<ANG_SuitableSpecificAnimal>Specific animals</ANG_SuitableSpecificAnimal>
+	
 	<ANG_RequireDefName>Only usable by</ANG_RequireDefName>
 </LanguageData>

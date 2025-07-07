@@ -46,7 +46,7 @@ namespace AnimalGear
 
         public static List<ThingDef> RequiredThingDefFromTags(ApparelProperties apparelProperties)
         {
-            List<string> requiredThingDef = [.. apparelProperties.tags.Where(x => x.StartsWith("defName")).Select(x => x.ReplaceFirst("defName", ""))];
+            List<string> requiredThingDef = [.. apparelProperties.tags.Where(x => x.StartsWith(AnimalGearConstants.PREFIX_DEF_REQUIRED)).Select(x => x.ReplaceFirst("defName", ""))];
 
             return [.. requiredThingDef.Select(defName => DefDatabase<ThingDef>.GetNamed(defName))];
         }
@@ -123,6 +123,46 @@ namespace AnimalGear
             }
 
             return true;
+        }
+
+        public static BodyDef GetBodyDefForCoverageInfo(ThingDef thing)
+        {
+            if (thing.race?.body is BodyDef thingBody) {
+                return thingBody;
+            }
+            if (thing.GetModExtension<AnimalApparelDefExtension>() is AnimalApparelDefExtension ext)
+            {
+                return ext.showCoverageForBodyType;
+            }
+            return BodyDefOf.Human;
+        }
+
+        public static String EquippableByStringFull(ThingDef thing)
+        {
+            return "ANG_SuitableFor".Translate() + ": " + EquippableByString(thing);
+        }
+        public static String EquippableByString(ThingDef thing)
+        {
+            ApparelProperties appProps = thing.apparel;
+
+            bool defFilter = appProps.tags.Any(x => x.StartsWith(AnimalGearConstants.PREFIX_DEF_REQUIRED));
+            bool animalOnly = appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY));
+            bool animalAllowed = appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ALLOWED));
+
+            if (defFilter) {
+                if (animalOnly)
+                {
+                    return "ANG_SuitableSpecificAnimal".Translate();
+                }
+                return "ANG_SuitableSpecific".Translate();
+            }
+            if (animalOnly) {
+                return "ANG_SuitableAnimal".Translate();
+            }
+            if (animalAllowed) {
+                return "ANG_SuitableAnimalHuman".Translate();
+            }
+            return "ANG_SuitableHuman".Translate();
         }
     }
 }

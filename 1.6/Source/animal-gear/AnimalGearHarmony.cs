@@ -12,6 +12,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using static UnityEngine.Scripting.GarbageCollector;
 
 namespace AnimalGear
 {
@@ -83,42 +84,51 @@ namespace AnimalGear
         [HarmonyPatch(typeof(ThingDef), "get_DescriptionDetailed")]
         public static class ThingDef_get_DescriptionDetailed_Patch
         {
-            public static bool Prefix(ThingDef __instance, ref string __result)
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                if (!__instance.HasModExtension<AnimalApparelDefExtension>()) { return true; }
-                AnimalApparelDefExtension defExt = __instance.GetModExtension<AnimalApparelDefExtension>();
+                var codes = new List<CodeInstruction>(instructions);
 
-                var cachedDescriptionField = typeof(ThingDef).GetField("descriptionDetailedCached", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (cachedDescriptionField.GetValue(__instance) == null)
+                // For BodyDef replacement
+                var staticField = AccessTools.Field(typeof(BodyDefOf), nameof(BodyDefOf.Human));
+                var replacementMethod = AccessTools.Method(typeof(AnimalGearHelper), nameof(AnimalGearHelper.GetBodyDefForCoverageInfo));
+
+                // For extra line insertion
+                var appendMethod = AccessTools.Method(typeof(StringBuilder), nameof(StringBuilder.Append), new[] { typeof(string) });
+                var newLineProperty = AccessTools.Property(typeof(Environment), nameof(Environment.NewLine));
+                var getNewLineMethod = newLineProperty.GetGetMethod();
+                var equippableByMethod = AccessTools.Method(typeof(AnimalGearHelper), nameof(AnimalGearHelper.EquippableByStringFull));
+                int appendCount = 0;
+
+                for (var i = 0; i < codes.Count; i++)
                 {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.Append(__instance.description);
-                    if (__instance.IsApparel)
+                    var code = codes[i];
+
+                    // Replace the reference to BodyDefOf.Human with a method call
+                    if (code.opcode == OpCodes.Ldsfld && code.operand as FieldInfo == staticField)
                     {
-                        stringBuilder.AppendLine();
-                        stringBuilder.AppendLine();
-                        stringBuilder.AppendLine(string.Format("{0}: {1}", "Layer".Translate(), __instance.apparel.GetLayersString()));
-                        stringBuilder.AppendLine(string.Format("{0}", "ANG_RequireBodyType".Translate()));
-                        stringBuilder.Append(string.Format("{0}: {1}", "Covers".Translate(), __instance.apparel.GetCoveredOuterPartsString(defExt.showCoverageForBodyType)));
-                        if (__instance.equippedStatOffsets != null && __instance.equippedStatOffsets.Count > 0)
+                        yield return new CodeInstruction(OpCodes.Ldarg_0); // Load 'this' (first argument in instance methods)
+                        yield return new CodeInstruction(OpCodes.Call, replacementMethod);
+                    } else if (code.opcode == OpCodes.Callvirt && code.operand as MethodInfo == appendMethod) 
+                    {
+                        appendCount++;
+
+                        yield return code;
+                        // After "Covers: "...
+                        if (appendCount == 2)
                         {
-                            stringBuilder.AppendLine();
-                            stringBuilder.AppendLine();
-                            for (int i = 0; i < __instance.equippedStatOffsets.Count; i++)
-                            {
-                                if (i > 0)
-                                {
-                                    stringBuilder.AppendLine();
-                                }
-                                StatModifier statModifier = __instance.equippedStatOffsets[i];
-                                stringBuilder.Append(string.Format("{0}: {1}", statModifier.stat.LabelCap, statModifier.ValueToStringAsOffset));
-                            }
+                            // Append new line
+                            yield return new CodeInstruction(OpCodes.Call, getNewLineMethod);
+                            yield return new CodeInstruction(OpCodes.Callvirt, appendMethod);
+
+                            // Append AnimalGearHelper.EquippableByStringFull(this)
+                            yield return new CodeInstruction(OpCodes.Ldarg_0);
+                            yield return new CodeInstruction(OpCodes.Call, equippableByMethod);
+                            yield return new CodeInstruction(OpCodes.Callvirt, appendMethod);
                         }
+                    } else {
+                        yield return code;
                     }
-                    cachedDescriptionField.SetValue(__instance, stringBuilder.ToString());
                 }
-                __result = (string)cachedDescriptionField.GetValue(__instance);
-                return false;
             }
         }
 
@@ -154,6 +164,42 @@ namespace AnimalGear
             }
         }
 
+        [HarmonyPatch]
+        public static class ThingDef_SpecialDisplayStats_MoveNext_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                var iteratorType = typeof(ThingDef).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
+                    .FirstOrDefault(t => t.Name.Contains("SpecialDisplayStats"));
+                return AccessTools.Method(iteratorType, "MoveNext");
+            }
+
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                Log.Message("Transpiler start!");
+                var codes = new List<CodeInstruction>(instructions);
+
+                // For BodyDef replacement
+                var staticField = AccessTools.Field(typeof(BodyDefOf), nameof(BodyDefOf.Human));
+                var replacementMethod = AccessTools.Method(typeof(AnimalGearHelper), nameof(AnimalGearHelper.GetBodyDefForCoverageInfo));
+                for (var i = 0; i < codes.Count; i++)
+                {
+                    var code = codes[i];
+
+                    // Replace the reference to BodyDefOf.Human with a method call
+                    if (code.opcode == OpCodes.Ldsfld && code.operand as FieldInfo == staticField)
+                    {
+                        yield return new CodeInstruction(OpCodes.Ldloc_2); // Load 'this' (first argument in instance methods)
+                        yield return new CodeInstruction(OpCodes.Call, replacementMethod);
+                    }
+                    else
+                    {
+                        yield return code;
+                    }
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(ThingDef), nameof(ThingDef.SpecialDisplayStats))]
         public static class ThingDef_SpecialDisplayStatsPatch
         {
@@ -162,18 +208,12 @@ namespace AnimalGear
                 bool extraStatInserted = false;
                 foreach (StatDrawEntry entry in values)
                 {
-                    // The "covers" entry, eat it and do our own
-                    if (entry.DisplayPriorityWithinCategory == 2750)
-                    {
-                        ApparelProperties appProps = __instance.apparel;
-                        BodyDef showCoverageFor = __instance.GetModExtension<AnimalApparelDefExtension>()?.showCoverageForBodyType ?? BodyDefOf.Human;
-                        string coveredOuterPartsString = __instance.apparel.GetCoveredOuterPartsString(showCoverageFor);
-                        yield return new StatDrawEntry(StatCategoryDefOf.Apparel, "Covers".Translate(), coveredOuterPartsString, "Stat_Thing_Apparel_Covers_Desc".Translate(), 2750, null, null, false, false);
-                    }
-
                     if (entry.category == StatCategoryDefOf.Apparel && !extraStatInserted)
                     {
                         ApparelProperties appProps = __instance.apparel;
+                        yield return new StatDrawEntry(StatCategoryDefOf.Apparel, "ANG_SuitableFor".Translate(), AnimalGearHelper.EquippableByString(__instance),
+                                AnimalGearHelper.EquippableByStringFull(__instance), 2750, null, null, false, false);
+
                         if (!appProps.tags.NullOrEmpty() && appProps.tags.Any(x => x.StartsWith("defName")))
                         {
                             List<ThingDef> requiredDefs = AnimalGearHelper.RequiredThingDefFromTags(appProps);
@@ -186,7 +226,8 @@ namespace AnimalGear
 
                         extraStatInserted = true;
                     }
-                    if (entry.DisplayPriorityWithinCategory != 2750) yield return entry;
+
+                    yield return entry;
                 }
             }
         }
