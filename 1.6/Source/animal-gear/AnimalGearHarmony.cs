@@ -259,7 +259,7 @@ namespace AnimalGear
                     {
                         yield return code;
 
-                        // effectively: And !IsAnimalOfColony(this.Wearer)
+                        // effectively: && !IsAnimalOfColony(this.Wearer)
                         // but it's not negated and an or, because if true it skips the if block.
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         yield return new CodeInstruction(OpCodes.Callvirt, get_Wearer);
