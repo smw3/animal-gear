@@ -84,7 +84,7 @@ namespace AnimalGear
         public static bool CanEquipApparel(ThingDef thing, Pawn pawn, ref string cantReason)
         {
             ApparelProperties appProps = thing.apparel;
-            if (appProps.tags.Any(x => x.StartsWith("defName")))
+            if (appProps.tags.Any(x => x.StartsWith(AnimalGearConstants.PREFIX_DEF_REQUIRED)))
             {
                 // There's def restrictions, check them
                 bool defAllowed = false;
@@ -108,7 +108,14 @@ namespace AnimalGear
                 }
             } else {
                 // Animals can't wear human gear unless it's marked as such
-                if ((pawn.IsAnimal() || pawn.IsSapientAnimal()) && !appProps.tags.Any(x => x.Equals("AnimalApparel")))
+                if ((pawn.IsAnimal() || pawn.IsSapientAnimal()) && !appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ALLOWED) || x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY)))
+                {
+                    cantReason = "ANG_WrongBodyType".Translate();
+                    return false;
+                }
+
+                // Humans can't wear gear made only for animals
+                if (!(pawn.IsAnimal() || pawn.IsSapientAnimal()) && appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY)))
                 {
                     cantReason = "ANG_WrongBodyType".Translate();
                     return false;
