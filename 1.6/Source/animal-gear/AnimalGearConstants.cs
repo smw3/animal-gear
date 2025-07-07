@@ -12,5 +12,6 @@ namespace AnimalGear
         public const String TAG_ANIMAL_ALLOWED = "AnimalApparel";
         public const String TAG_ANIMAL_ONLY = "AnimalOnly";
         public const String PREFIX_DEF_REQUIRED = "defName";
+        public const String TAG_APPAREL_INVISIBLE_FOR_ANIMAL = "AnimalInvisible";
     }
 }

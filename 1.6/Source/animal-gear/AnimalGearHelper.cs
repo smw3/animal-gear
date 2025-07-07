@@ -164,5 +164,16 @@ namespace AnimalGear
             }
             return "ANG_SuitableHuman".Translate();
         }
+
+        private static Dictionary<ThingDef, bool> _invisibleCache = [];
+        public static bool InvisibleForAnimal(ThingDef def)
+        {
+            if (!_invisibleCache.TryGetValue(def, out var isInvisible))
+            {
+                isInvisible = def.apparel?.tags?.Any(x => x.Equals(AnimalGearConstants.TAG_APPAREL_INVISIBLE_FOR_ANIMAL)) == true;
+                _invisibleCache[def] = isInvisible;
+            }
+            return isInvisible;
+        }
     }
 }

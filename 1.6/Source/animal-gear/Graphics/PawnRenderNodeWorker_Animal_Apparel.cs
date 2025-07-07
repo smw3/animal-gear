@@ -11,7 +11,6 @@ namespace AnimalGear.Graphics
     {
         public override bool CanDrawNow(PawnRenderNode n, PawnDrawParms parms)
         {
-            // TODO
             return base.CanDrawNow(n, parms);
         }
     }

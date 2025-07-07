@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 using Verse;
@@ -132,6 +133,7 @@ namespace AnimalGear
             }
         }
 
+
         // Redirect CanControlColonist to CanControl and a spawned check. Most of the checks done are super redundant anyways
         // but the main purpose is to skip a test for humanlike
         // This method is exclusively used to decide whether or not to draw the "drop apparel" inventory gizmo, so should have
@@ -176,7 +178,6 @@ namespace AnimalGear
 
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                Log.Message("Transpiler start!");
                 var codes = new List<CodeInstruction>(instructions);
 
                 // For BodyDef replacement
@@ -200,7 +201,80 @@ namespace AnimalGear
             }
         }
 
-        [HarmonyPatch(typeof(ThingDef), nameof(ThingDef.SpecialDisplayStats))]
+        [HarmonyPatch]
+        public static class CompApparelVerbOwner_CompGetWornGizmosExtra_Patch
+        {
+            static MethodBase TargetMethod()
+            {
+                var iteratorType = typeof(CompApparelVerbOwner).GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
+                    .FirstOrDefault(t => t.Name.Contains("CompGetWornGizmosExtra"));
+                return AccessTools.Method(iteratorType, "MoveNext");
+            }
+
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var codes = new List<CodeInstruction>(instructions);
+                var isAnimalColony = AccessTools.Method(typeof(AnimalGearHelper), nameof(AnimalGearHelper.IsAnimalOfColony));
+                var get_Wearer = AccessTools.Method(typeof(CompApparelVerbOwner), "get_Wearer");
+
+                for (var i = 0; i < codes.Count; i++)
+                {
+                    var code = codes[i];
+
+                    // Extend drafted with another or
+                    if (code.opcode == OpCodes.Stloc_3)
+                    {
+                        yield return code;
+
+                        // drafted = drafted || IsAnimalOfColony(this.Wearer)
+                        yield return new CodeInstruction(OpCodes.Ldloc_3);
+                        yield return new CodeInstruction(OpCodes.Ldloc_2);
+                        yield return new CodeInstruction(OpCodes.Callvirt, get_Wearer);
+                        yield return new CodeInstruction(OpCodes.Call, isAnimalColony);
+                        yield return new CodeInstruction(OpCodes.Or);
+                        yield return new CodeInstruction(OpCodes.Stloc_3);
+                    }
+                    else
+                    {
+                        yield return code;
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(CompApparelVerbOwner), "CreateVerbTargetCommand")]
+        public static class CompApparelVerbOwner_CreateVerbTargetCommand_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var codes = new List<CodeInstruction>(instructions);
+                var isColonistPlayerControlled = AccessTools.Method(typeof(Pawn), "get_IsColonistPlayerControlled");
+                var get_Wearer = AccessTools.Method(typeof(CompApparelVerbOwner), "get_Wearer");
+                var isAnimalColony = AccessTools.Method(typeof(AnimalGearHelper), nameof(AnimalGearHelper.IsAnimalOfColony));
+
+                for (var i = 0; i < codes.Count; i++)
+                {
+                    var code = codes[i];
+                    if (code.opcode == OpCodes.Callvirt && code.operand as MethodInfo == isColonistPlayerControlled)
+                    {
+                        yield return code;
+
+                        // effectively: And !IsAnimalOfColony(this.Wearer)
+                        // but it's not negated and an or, because if true it skips the if block.
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Callvirt, get_Wearer);
+                        yield return new CodeInstruction(OpCodes.Call, isAnimalColony);
+
+                        yield return new CodeInstruction(OpCodes.Or);
+                    } else
+                    {
+                        yield return code;
+                    }
+                }
+            }
+        }
+
+            [HarmonyPatch(typeof(ThingDef), nameof(ThingDef.SpecialDisplayStats))]
         public static class ThingDef_SpecialDisplayStatsPatch
         {
             public static IEnumerable<StatDrawEntry> Postfix(IEnumerable<StatDrawEntry> values, StatRequest req, ThingDef __instance)

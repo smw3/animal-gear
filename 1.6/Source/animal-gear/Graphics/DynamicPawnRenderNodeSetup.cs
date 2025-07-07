@@ -25,7 +25,7 @@ namespace AnimalGear.Graphics
 
             foreach (Apparel apparel in pawn.apparel.WornApparel)
             {
-                if (!apparel.def.IsWeapon)
+                if (!apparel.def.IsWeapon && !AnimalGearHelper.InvisibleForAnimal(apparel.def))
                 {
                     DrawData drawData = apparel.def.apparel.drawData;
                     PawnRenderNodeProperties pawnRenderNodeProperties = new PawnRenderNodeProperties

@@ -7,4 +7,13 @@
 		</value>
 		<order>Append</order>
 	</Operation>
+	
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/ThingDef[defName="Apparel_PackJump"]/apparel/tags</xpath>
+		<value>
+			<li>AnimalApparel</li>
+			<li>AnimalInvisible</li>
+		</value>
+		<order>Append</order>
+	</Operation>
 </Patch>
