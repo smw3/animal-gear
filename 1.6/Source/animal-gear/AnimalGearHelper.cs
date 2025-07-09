@@ -108,7 +108,7 @@ namespace AnimalGear
                 }
             } else {
                 // Animals can't wear human gear unless it's marked as such
-                if ((pawn.IsAnimal() || pawn.IsSapientAnimal()) && !appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ALLOWED) || x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY)))
+                if ((pawn.IsAnimal() || pawn.IsSapientAnimal()) && !(appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ALLOWED) || x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY))))
                 {
                     cantReason = "ANG_WrongBodyType".Translate();
                     return false;

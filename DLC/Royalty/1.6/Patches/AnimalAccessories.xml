@@ -1,15 +1,16 @@
 <Patch>
-	<!-- Smokepop and firefoam sort of make sense, but look real weird -->
+	
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/ThingDef[defName="Apparel_ShieldBelt"]/apparel/tags</xpath>
+		<xpath>/Defs/ThingDef[defName="Apparel_PackJump"]/apparel/tags</xpath>
 		<value>
 			<li>AnimalApparel</li>
+			<li>AnimalInvisible</li>
 		</value>
 		<order>Append</order>
 	</Operation>
-	
+		
 	<Operation Class="PatchOperationAdd">
-		<xpath>/Defs/ThingDef[defName="Apparel_ShieldBelt"]/apparel/bodyPartGroups</xpath>
+		<xpath>/Defs/ThingDef[defName="Apparel_PackJump"]/apparel/bodyPartGroups</xpath>
 		<value>
 			<li>AnimalBody</li>
 		</value>
