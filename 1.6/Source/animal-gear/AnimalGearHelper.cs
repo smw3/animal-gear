@@ -84,15 +84,23 @@ namespace AnimalGear
         public static bool CanEquipApparel(ThingDef thing, Pawn pawn, ref string cantReason)
         {
             ApparelProperties appProps = thing.apparel;
-            if (appProps.tags.Any(x => x.StartsWith(AnimalGearConstants.PREFIX_DEF_REQUIRED)))
+            return CanEquipApparel(appProps, pawn, ref cantReason);
+        }
+
+        public static bool CanEquipApparel(ApparelProperties properties, Pawn pawn, ref string cantReason)
+        {
+            if (properties.tags.Empty()) return true;
+            if (properties.tags.Any(x => x.StartsWith(AnimalGearConstants.PREFIX_DEF_REQUIRED)))
             {
                 // There's def restrictions, check them
                 bool defAllowed = false;
-                if (RequiredThingDefFromTags(appProps).Contains(pawn.def))
+                if (RequiredThingDefFromTags(properties).Contains(pawn.def))
                 {
                     defAllowed = true;
-                } else {
-                    if (pawn.IsSapientAnimal() && RequiredThingDefFromTags(appProps).Contains(AnimalSourceFor(pawn)))
+                }
+                else
+                {
+                    if (pawn.IsSapientAnimal() && RequiredThingDefFromTags(properties).Contains(AnimalSourceFor(pawn)))
                     {
                         defAllowed = true;
                     }
@@ -102,20 +110,25 @@ namespace AnimalGear
                 {
                     cantReason = "ANG_WrongBodyType".Translate();
                     return false;
-                } else
+                }
+                else
                 {
                     return true;
                 }
-            } else {
+            }
+            else
+            {
                 // Animals can't wear human gear unless it's marked as such
-                if ((pawn.IsAnimal() || pawn.IsSapientAnimal()) && !(appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ALLOWED) || x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY))))
+                bool animalAllowed = properties.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ALLOWED));
+                bool animalOnly = properties.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY));
+                if ((pawn.IsAnimal() || pawn.IsSapientAnimal()) && !(animalAllowed || animalOnly))
                 {
                     cantReason = "ANG_WrongBodyType".Translate();
                     return false;
                 }
 
                 // Humans can't wear gear made only for animals
-                if (!(pawn.IsAnimal() || pawn.IsSapientAnimal()) && appProps.tags.Any(x => x.Equals(AnimalGearConstants.TAG_ANIMAL_ONLY)))
+                if (animalOnly && !(pawn.IsAnimal() || pawn.IsSapientAnimal()))
                 {
                     cantReason = "ANG_WrongBodyType".Translate();
                     return false;

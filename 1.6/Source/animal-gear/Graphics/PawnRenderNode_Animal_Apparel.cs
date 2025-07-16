@@ -30,10 +30,10 @@ namespace AnimalGear.Graphics
         }
         protected override IEnumerable<Graphic> GraphicsFor(Pawn pawn)
         {
-            ApparelGraphicRecord apparelGraphicRecord;
+            ApparelGraphicRecord? apparelGraphicRecord;
             if (RenderHelpers.TryGetGraphicApparelForAnimal(this.apparel, pawn, out apparelGraphicRecord))
             {
-                yield return apparelGraphicRecord.graphic;
+                yield return apparelGraphicRecord.Value.graphic;
             }
             yield break;
         }

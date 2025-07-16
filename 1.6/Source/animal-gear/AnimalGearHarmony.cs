@@ -321,20 +321,20 @@ namespace AnimalGear
             return __result;
         }
 
+        public static bool CanEquipThing(bool __result, ApparelProperties properties, Pawn pawn, ref string cantReason)
+        {
+            if (__result == false || properties == null || pawn == null)
+            {
+                return __result;
+            }
+
+            __result = __result && AnimalGearHelper.CanEquipApparel(properties, pawn, ref cantReason);
+
+            return __result;
+        }
+
         // Gratefully borrowed from B&S Framework
-        [HarmonyPatch(typeof(EquipmentUtility), nameof(EquipmentUtility.CanEquip), new Type[]
-        {
-        typeof(Thing),
-        typeof(Pawn),
-        typeof(string),
-        typeof(bool)
-        }, new ArgumentType[]
-        {
-        ArgumentType.Normal,
-        ArgumentType.Normal,
-        ArgumentType.Out,
-        ArgumentType.Normal
-        })]
+        [HarmonyPatch(typeof(EquipmentUtility), nameof(EquipmentUtility.CanEquip), [ typeof(Thing), typeof(Pawn), typeof(string), typeof(bool) ], [ ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Normal ])]
         public static class EquipmentUtility_CanEquip_Patch
         {
             public static void Postfix(ref bool __result, Thing thing, Pawn pawn, ref string cantReason, bool checkBonded = true)
@@ -379,6 +379,19 @@ namespace AnimalGear
                 {
                     string discard = "";
                     __result = CanEquipThing(__result, __instance.def, pawn, ref discard);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(ApparelProperties), nameof(ApparelProperties.PawnCanWear), [typeof(Pawn), typeof(bool)])]
+        public static class ApparelProperties_PawnCanWear_Patch
+        {
+            public static void Postfix(ApparelProperties __instance, ref bool __result, Pawn pawn, bool ignoreGender)
+            {
+                if (__result == true)
+                {
+                    string discard = "";
+                    __result = CanEquipThing(__result, __instance, pawn, ref discard);
                 }
             }
         }
